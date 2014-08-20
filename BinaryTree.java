@@ -1,654 +1,495 @@
-import java.util.Stack;
+//Node Class
 import java.util.*;
-import java.util.Queue;
-
 class BTreeNode{
-	 public int value;
-	
-	 public BTreeNode lChild;
-	 public BTreeNode rChild;
-	 boolean visited;
-	 public BTreeNode(int value){
-	 	this.lChild = null;
-	 	this.rChild = null;
-	 	this.value = value;
-	 	this.visited = false;
-	 	
-	 }
-	 public boolean add(int value){
-	 	BTreeNode btn = new BTreeNode(value);
-	 	if(value == this.value){
-	 		return false;
-	 	}
-	 	if(value<this.value){
-	 		if(this.lChild == null){
-	 			this.lChild = btn;
-	 			return true;
-	 		}
-	 		else{
-	 			lChild.add(value);
-	 		}
-	 	}
-	 	else{
-	 		if(this.rChild == null){
-	 			this.rChild = btn;
-	 			return true;
-	 		}
-	 		else{
-	 			return rChild.add(value);
-	 		}
-	 	}
-	 	return false;
-	 }
+  BTreeNode lChild;
+	BTreeNode rChild;
+  boolean islVisited;
+  boolean isrVisited;
+	int value;
+  //Constructor
+	public BTreeNode(int value){
+		lChild = null;
+		rChild = null;
+		this.value = value;
+	}
+
+  //inserting at appropriate place
+  protected boolean add(int value){
+    BTreeNode btn = new BTreeNode(value);
+    if(this.value == value) return false;
+    if(this.value > value){
+      if(this.lChild == null){
+        this.lChild = btn;
+        return true;
+      }
+      else lChild.add(value);
+    }
+   else{
+     if(this.rChild ==null){
+       rChild = btn;
+       return true;
+     }
+     else{
+       rChild.add(value);
+     }
+   }
+   return false;
+  }
 
 }
 
-public class BinaryTree{
-    BTreeNode root;
-    public ArrayList<BTreeNode>bt ;
-	public BinaryTree(){
-		root = null;
-		bt = new ArrayList<BTreeNode>();
-	}
-	public boolean insert(int value){
-		if(root == null){
-			root  = new BTreeNode(value);
-			return true;
-		}
-		else{
-			return root.add(value);
-		}
-	}
-	
-	//Inorder 
-	public void inorder(BTreeNode node){
-		System.out.println("Value inorder" + node.value);
-		if(node.lChild!=null)
-			inorder(node.lChild);
-		
-		if(node.rChild!=null)
-			inorder(node.rChild);
-	}
+//Main Class
+public class BTree{
+  BTreeNode root;
+  static int min=0;
+  Hashtable<Integer,ArrayList<BTreeNode>>ht;
+  //Constructor
+  BTree(){
+    root  = null;
+    ht = new Hashtable<Integer,ArrayList<BTreeNode>>();
+  }
 
-	//postorder
-	public void postorder(BTreeNode node){
-		if(node.lChild!=null)
-			inorder(node.lChild);
-		if(node.rChild!=null)
-			inorder(node.rChild);
-		System.out.println("Value is" + node.value);
-	}
+  //inserting values into Binary Tree
+  public boolean insert(int value){
+    if(root == null){
+      root = new BTreeNode(value);
+      return true;
+    }
+    else{
+      return root.add(value);
+    }
+  }
 
-	//hasPathSum
-	public boolean  hasPathSum(int data){
-		return hasPathSum(this.root,data);
-	}
+  //preOrder traversal
+  public void preOrder(BTreeNode node){
+    if(node ==null)return;
+    System.out.println("preOrder "+ node.value);
+    preOrder(node.lChild);
+    preOrder(node.rChild);
+  }
 
-	//isBST
-	public boolean isBST(){
-		return isBST(this.root);
-	}
+  //inOrder traversal
+  public void inOrder(BTreeNode node){
+    if(node ==null)return;
+    inOrder(node.lChild);
+    System.out.println("InOrder "+ node.value);
+    inOrder(node.rChild);
+  }
 
-	//hasPathSum
-	public boolean hasPathSum(BTreeNode node,int diff){
-		if(node == null)return false;
-		else{
-			diff = diff - node.value;
-			//System.out.println("digg...." + diff);
-			if(node.lChild == null && node.rChild == null){
-				return (diff == 0);
-			}
-			else{
-				if(node.lChild!=null && hasPathSum(node.lChild,diff)) return true;
-				if(node.rChild!=null && hasPathSum(node.rChild,diff)) return true;
-			}
-			return false;
-		}
-		
-	}
-	
-	//dfs
-	public void dfs(BTreeNode root){
-		Stack<BTreeNode> s = new Stack<BTreeNode>();
-		s.push(root);
-		while(!s.isEmpty()){
-			BTreeNode n = s.pop();
-			System.out.println(n.value);
-			if(n.rChild!=null)s.push(n.rChild);
-			if(n.lChild!=null)s.push(n.lChild);
+  //Binary Tree Balanced if height diff bwn left and right subtree not more then 1
+  public boolean isBalanced(BTreeNode node){
+      /*if(node ==null)return true;
+      int diff = getHeight(node.lChild) - getHeight(node.rChild);
+      if(Math.abs(diff)>1)return false;
+      else return isBalanced(node.lChild) && isBalanced(node.rChild);*/
+      if(checkHeight(root)==-1)return false;
+      else return true;
+  }
 
-		}
-		
-	}
+  //height of binary Tree
+  public int getHeight(BTreeNode node){
+    if(node ==null) return 0;
+    return Math.max(getHeight(node.lChild),getHeight(node.rChild))+1;
+  }
 
-	
-	//printPath
-	public void printPath(BTreeNode node){
-		Stack<BTreeNode> s = new Stack<BTreeNode>();
-		s.push(node);
-		while(!s.isEmpty()){
-			BTreeNode b = s.pop();
-			//System.out.println(b.value);
-			if(b!=null && b.lChild == null && b.rChild == null){
-				//printPath(bt);
-				
-				//bt.add(b);
-				printPath(bt);
-				System.out.println("ooo  "+b.value);
-			}
-			else{
-				bt.add(b);
-			}
-			if(b.rChild!=null) s.push(b.rChild);
-			if(b.lChild!=null) s.push(b.lChild);
-		}
+  //checkHeight and return -1 if tree unbalanced else return height
+  public int checkHeight(BTreeNode node){
+    if(node ==null) return 0;
+    int leftH = checkHeight(node.lChild);
+    if(leftH == -1)return -1;
+    int rightH = checkHeight(node.rChild);
+    if(rightH == -1)return -1;
+    int diff = leftH - rightH;
+    if(Math.abs(diff)>1) return -1;
+    else return Math.max(checkHeight(node.lChild),checkHeight(node.rChild)+1);
+  }
 
-	}
+  //finds ancestor of two nodes
+  public BTreeNode findAncestor(BTreeNode node,BTreeNode p,BTreeNode q){
+    if(node ==null)return null;
+    if(node ==p || node ==q)return node;
+    BTreeNode l = findAncestor(node.lChild,p,q);
+    BTreeNode r = findAncestor(node.rChild,p,q);
+    if(l!=null && r!=null) return node;
+    if(l!=null)return l;
+    else return r;
+  }
 
+  //checking if the sum of nodes in tree is equal to specified sum
+  public boolean hasPathSum(BTreeNode node , int sum){
+    if(node == null)return false;
+    int diff = sum-node.value;
+    if(node.lChild==null && node.rChild==null){
+      if(diff ==0)printPath(node);
+      return (diff ==0);
+    }
+    if(node.lChild!=null && hasPathSum(node.lChild,diff))return true;
+    if(node.rChild!=null && hasPathSum(node.rChild,diff))return true;
+    return false;
+  }
 
-	public void printPath(ArrayList< BTreeNode> b){
-		for(BTreeNode n : b ){
-			System.out.println("ooo     "+ n.value);
-		}
-		//bt.remove(b.size()-1);
-		
-	}
+  //print path from root to leaf of specified sum
+  public ArrayList<BTreeNode> printPath(BTreeNode node){
+     ArrayList<BTreeNode>btn = new ArrayList<BTreeNode>();
+     btn.add(node);
+     while(node.value!=root.value){
+       node = getParent(node);
+       btn.add(node);
+     }
+     //btn.add(this.root);
+     for(BTreeNode bt:btn)System.out.print(bt.value+" ");
+     return btn;
+  }
 
-	//hasSequence
-	public boolean hasSequence(int seq[],int start, int len ){
-		if(len<=0 || seq==null){
-			return false;
-		}
-		int root = seq[len-1];
-		int i=start;
-		for(;i<len-1;i++){
-			if(seq[i] >= root)break;
-		}
-		for(int j=i;j<len-1;j++){
-			if(seq[j] <= root)return false;
-		}
-		boolean left =true;
-		boolean right = true;
-		if(i>0){
-			left = hasSequence(seq,0,i);
-		}
-		if(i<len-1){
-			right = hasSequence(seq,i,len-1-i);
-		}
-		return left && right;
+  //getParent of any node in Binary Tree
+  public BTreeNode getParent(BTreeNode node){
+    BTreeNode temp =this.root;
+    BTreeNode prev =temp;
+    if(temp.value ==node.value)return node;
+    while(node.value !=temp.value){
+      prev = temp;
+      if(node.value > temp.value) temp = temp.rChild;
+      else temp = temp.lChild;
+    }
+    return prev;
+  }
 
-	}
+  //print nodes in DFS order
+  public void getDFS(BTreeNode node){
+    Stack<BTreeNode>s = new Stack<BTreeNode>();
+    BTreeNode[]btn =new BTreeNode[7];
+    int i=0;
+    s.push(node);
+    while(!s.isEmpty()){
+      BTreeNode b = s.pop();
+      btn[i++] = b;
+      if(b.rChild!=null)s.push(b.rChild);
+      if(b.lChild!=null)s.push(b.lChild);
+    }
 
-	//mirror
-	public  BTreeNode mirror(BTreeNode node){
-		BTreeNode temp = new BTreeNode(node.value);
-		if(node == null)return null;
-		if(node.lChild!=null){
-			temp.rChild = mirror(node.lChild);
-		}
-		if(node.rChild!=null){
-			temp.lChild = mirror(node.rChild);		}
-		return temp;
-	}
+  }
 
-	//isBST
-	public boolean isBST(BTreeNode node){
-		if(node == null) return true;
-		//System.out.println("bst1...." + getMin(node.lChild,1000));
-		//System.out.println("bst.2..." + getMax(node.rChild,0));
-		if(node.lChild!=null){
-			if(node.value < getMin(node.lChild,0)){
-				//System.out.println("bst...." + getMin(node.lChild,0));
-				return false;
-				
-			} 
-		}
-		if(node.rChild!=null){
-			if(node.value > getMax(node.rChild,0)) {
-				//System.out.println("bst...." + getMin(node.rChild,0));
-				return false;
-			}
-		}
-		if(!isBST(node.lChild) && !isBST(node.rChild)) return false;
+  //getDistance of the node from max height
+  public int getDistance(BTreeNode node){
+    if(node ==null)return 0;
+    else return Math.max(getDistance(node.lChild),getDistance(node.rChild))+1;
+  }
 
-		else return true;
-	}
+  //height of a node from root
+  public int getDiff(BTreeNode node){
+    return getHeight(this.root) - getDistance(node);
+  }
 
-	//getMin
-	public int getMin(BTreeNode node, int min){
-		//if(node == null) return 0;
-		if(node.value < min) {
-			min = node.value;
-		}
-		if(node.lChild!=null) return getMin(node.lChild,min);
-		if(node.rChild!=null) return getMin(node.rChild,min);
-		return min;
-	}
+  //getDistance between 2 nodes.
+  public int getDistance(BTreeNode p,BTreeNode q){
+    if(p ==this.root && q!=this.root) return getHeight(q);
+    if(q ==this.root && p!=this.root) return getHeight(p);
+    if(p==q) return 0;
+    else{
+      BTreeNode anc = findAncestor(this.root,p,q);
+      int d = Math.abs(getDiff(anc)-getDiff(p)-getDiff(q));
+      return d;
+    }
 
-	//getMax
-	public int getMax(BTreeNode node, int max){
-		if(node == null) return 0;
-		if(node.value > max) max = node.value;
-		if(node.lChild!=null) return getMin(node.lChild,max);
-		if(node.rChild!=null) return getMin(node.rChild,max);
-		return max;
-	}
+  }
 
-	//findAncestor
-	public BTreeNode findAncestor(BTreeNode node, BTreeNode p,BTreeNode q){
-		if(node == null)return null;
-		if(node ==p || node == q) return node;
-		//if(node.lChild == p && node.rChild == q || node.lChild == q && node.rChild == p ) return node;
-		BTreeNode left = findAncestor(node.lChild,p,q);
-		BTreeNode right = findAncestor(node.rChild,p,q);
-		if(left!=null && right!=null) return node;
-		if(left!=null) return left;
-		else return right;
-	}
+  //print leaves in a tree
+  public void printLeaves(BTreeNode node){
+    if(node.lChild==null && node.rChild==null)System.out.print("Leaves " + node.value +" ");
+    if(node.lChild!=null)printLeaves(node.lChild);
+    if(node.rChild!=null)printLeaves(node.rChild);
+  }
 
-	//inOrderI
-	public void inOrderI(BTreeNode node){
-		Stack<BTreeNode> s = new Stack<BTreeNode>();
-		boolean visited  = false;
-		while(!visited){
-			if(node!=null){
-				s.push(node);
-				node = node.lChild;
-			}
-			else{
-				if(!s.isEmpty()){
-					BTreeNode b = s.pop();
-					System.out.println(b.value);
-					node = b.rChild;
-				}
-				else{
-					visited = true;
-				}
-			}
-		}
-	}
+  //getClosest node for a given target
+  public int getClosest(BTreeNode node,int target){
+    if(node.lChild!=null)getClosest(node.lChild,target);
+    if(node.rChild!=null)getClosest(node.rChild,target);
+    int diff = Math.abs(node.value-target);
+    int tar = Math.abs(min-target);
+    int mid = Math.min(diff,tar);
+    mid=(mid== diff)?node.value:mid;
+    min = getNear(target,mid,min);
+    return min;
+  }
 
-	//preOrder
-	public void preOrder(BTreeNode node){
-		Stack<BTreeNode> s = new Stack<BTreeNode>();
-		boolean visited  = false;
-		while(!visited){
-			if(node!=null){
-				System.out.println("Value in preOrder "+node.value);
-				s.push(node);
-				node = node.lChild;
+  //getNearest value of the target
+  private int getNear(int target,int p,int q){
+    int diff1 = Math.abs(target-p);
+    int diff2 = Math.abs(target-q);
+    int close = (diff1<diff2)?p:q;
+    return close;
+  }
 
-			}
-			else{
-				if(!s.isEmpty()){
-					node = s.pop();
-					node = node.rChild;
-				}
-				else{
-					visited = true;
-				}
-			}
-		}
-	}
+  //program to print mirror image of a Binarytree
+  public BTreeNode mirrorTree(BTreeNode node){
+    BTreeNode temp = new BTreeNode(node.value);
+    if(node ==null)return  null;
+    if(node.lChild!=null)temp.rChild = mirrorTree(node.lChild);
+    if(node.rChild!=null)temp.lChild = mirrorTree(node.rChild);
+    return temp;
+  }
 
+  //rightNeighbour of a node
+  public BTreeNode rightNeighbour(BTreeNode node,BTreeNode root){
+    Queue<BTreeNode> q = new LinkedList<BTreeNode>();
+    BTreeNode temp = new BTreeNode(-1);
+    q.add(root);
+    q.add(temp);
+    while(!q.isEmpty()){
+       BTreeNode b = q.remove();
+       System.out.println("right "+b.value);
+       if(b==node){
+         b = q.remove();
+         System.out.println("equal "+b.value);
+         return b;
+       }
+       if(b==temp){
+          System.out.println("temp "+b.value);
+          q.add(temp);
+          continue;
+          //b = q.remove();
+       }
+       if(b.lChild!=null)q.add(b.lChild);
+       if(b.rChild!=null)q.add(b.rChild);
+       //q.add(temp);
+    }
+    return null;
+  }
 
-	//show
-	public void show(){
-		if(root == null){
-			System.out.println("Nothing to display");
-		}
-		else{
-			inorder(this.root);
-			BTreeNode temp = mirror(this.root);
-			//inorder(temp);
-			//dfs(this.root);
-			printPath(this.root);
-			postorder(this.root);
-			isPair(this.root,3);
-			inOrderI(this.root);
-			inorder(this.root);
-			preOrder(this.root);
-			boundry(this.root);
-			BTreeNode n1 = this.root.lChild;
-			BTreeNode n2 = this.root.rChild.rChild;
-			System.out.println("test.."+n1.value+"...."+n2.value);
-			//bfs(this.root);
-			System.out.println("ancestor"+findAncestor(this.root,n1,n2).value);
-			spiralOrder(this.root);
-			kDistance(n1,n2);
-			System.out.println(isBalanced(this.root));
-			
-			//rightView(this.root);
-			System.out.println("sum "+sum(this.root,0));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 12 "+rMember(this.root,12));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 22 "+rMember(this.root,22));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 25 "+rMember(this.root,25));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 14 "+rMember(this.root,14));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 4 "+rMember(this.root,4));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 20 "+rMember(this.root,20));
-			System.out.println("_______________________________________________________________________");
-			System.out.println("right 8 "+rMember(this.root,8));
+  //Inorder traversal iterative
+  public void inOrderI(BTreeNode node){
+    Stack<BTreeNode>s = new Stack<BTreeNode>();
+    if(node==null)return;
+    boolean isLeaf = false;
+    s.push(node);
+    while(!s.isEmpty()){
+      BTreeNode b = s.pop();
+      if((b.lChild==null && b.rChild==null)){
+        b.islVisited=true;
+        b.isrVisited = true;
+        isLeaf = true;
+      }
 
-		}
-	}
+      if(b.islVisited && b.isrVisited){
+        System.out.println("visit "+b.value);
+        isLeaf = false;
+        continue;
+      }
+      if(b.rChild!=null)s.push(b.rChild);
+      b.isrVisited = true;
+      if(!isLeaf)s.push(b);
+      if(b.lChild!=null)s.push(b.lChild);
+      b.islVisited=true;
 
-	//inSucc
-	public int inSucc(BTreeNode b, int value){
-		BTreeNode target = search(b,value);
-	
-		if(target ==null)return 0;
-		if(target.rChild!=null){
-			target = target.rChild;
-			while(target.lChild!=null)target = target.lChild ;
-			return target.value;
+    }
+  }
 
-		}
-		else{
-			BTreeNode successor = null;
-			BTreeNode ancestor = this.root;
-			while(ancestor!=target){
-				if(target.value < ancestor.value){
-					successor = ancestor;
-					ancestor = ancestor.lChild;	
-				}
-				else{
-					ancestor = ancestor.rChild;
-				}
-			}
-			return successor.value;
-		}
-	} 
+  //bfs
+  public void bfs(BTreeNode node){
+    Queue<BTreeNode> q = new LinkedList<BTreeNode>();
+    if(node==null) return;
+    q.add(node);
+    while(!q.isEmpty()){
+      BTreeNode b = q.remove();
+      if(!b.islVisited) {
+        System.out.println("node "+b.value);
+        b.islVisited = true;
+      }
+      if(b.lChild!=null)q.add(b.lChild);
+      if(b.rChild!=null)q.add(b.rChild);
+    }
+  }
 
-	//search
-	public BTreeNode search(BTreeNode node,int data){
-		if(node == null)return null;
-		else{
-			if(node.value == data)return node;
-			if(node.value > data) return search(node.lChild,data);
-			if(node.value < data) return search(node.rChild,data);
-			else return null;
-		}
-	}
+  //isLeaf
+  public boolean isLeaf(BTreeNode node){
+    if(node.lChild ==null  && node.rChild==null)return true;
+    else return false;
+  }
+  //boundry of a tree
+  public void boundry(BTreeNode node){
+    if(node == null)return;
+    Stack<BTreeNode>s = new Stack<BTreeNode>();
+    BTreeNode temp = node;
+    //s.push(temp);
+    while(!isLeaf(node) && node.lChild!=null){
+      System.out.print("Boundry "+node.value + " ");
+      node = node.lChild;
+    }
+    while(temp.rChild!=null && !isLeaf(temp.rChild)){
+      temp = temp.rChild;
+      //System.out.println("o "+temp.value);
+      s.push(temp);
+    }
+    printLeaves(this.root);
+    while(!s.isEmpty()){
+      BTreeNode b= s.pop();
+      System.out.print("Right "+b.value+" ");
+    }
+  }
 
-	//printLeaves
-	public void printLeaves(BTreeNode node){
-		if(node!=null){
-			if(node.lChild==null && node.rChild ==null){
-				System.out.println("leaf"+node.value);
-			}
-			printLeaves(node.lChild);
-			printLeaves(node.rChild);
-		}
-	}
+  //maximum path sum
+  public int maxSum(BTreeNode node,int sum){
+    int max  = sum+node.value;
+    if(node.lChild ==null && node.rChild==null)return max;
+    int sum1 = maxSum(node.lChild,max);
+    int sum2 = maxSum(node.rChild,max);
+    return (sum1>sum2)?sum1:sum2;
+  }
 
-	//isLeave
-	public boolean isLeave(BTreeNode node){
-		if(node.lChild ==null && node.rChild == null){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
+  //maximum path sum between two leaves
+  public int maxPathLeaf(BTreeNode node,int sum){
+   // if(node ==null)return min;
+    if(node.lChild==null && node.rChild==null)return node.value;
+    int l=0;
+    int r=0;
+    if(node.lChild!=null)l = maxPathLeaf(node.lChild,sum);
+    if(node.rChild!=null)r = maxPathLeaf(node.rChild,sum);
+    int big = l+r+node.value;
+    int res = Math.max(Math.max(l,r),big);
+    if(res>sum)sum = res;
+    System.out.println("\nvalue "+res+ " left "+l+" right "+r+" big "+big);
+    System.out.println("\nvalue "+res+ " left "+l+" right "+r);
+    min =res;
+    return Math.max(l,r)+node.value;
+  }
 
-	//boundry
-	public void boundry(BTreeNode node){
-		BTreeNode curr = node;
-		while(node.lChild!=null && !isLeave(node)){
-			System.out.println("lchild.."+node.value);
-			node = node.lChild;
-		}
-		printLeaves(this.root);
-		Stack<BTreeNode> s = new Stack<BTreeNode>();
-		while(curr.rChild!=null && !isLeave(curr)){
-			//System.out.println("loop.."+curr.value);
-			s.push(curr.rChild);
-			curr = curr.rChild;
-		} 
-		while(!s.isEmpty()){
-			BTreeNode bt =  s.pop();
-			System.out.println("right.."+bt.value);
-		}
+  //transform a BST to greater sum tree
+  public void transformTree(BTreeNode node,int sum){
+    sum = node.value+sum;
+    if(node==null)return;
+    if(node.rChild!=null){
+      transformTree(node.rChild,sum);
+    }
 
-	}
+    node.value = sum -node.value;
+    if(node.lChild!=null)transformTree(node.lChild,sum);
+    //inOrder(this.root);
+  }
 
-	//BFS
-	public void bfs(BTreeNode node){
-		Queue<BTreeNode> q = new LinkedList<BTreeNode>();
-		//int arr[] = new arr[9];
-	
-		q.add(node);
-		//int i=0;
-		while(!q.isEmpty()){
-			BTreeNode b =  q.remove();
-			if(!b.visited)System.out.println("queue added.."+b.value);
-			b.visited = true;
-			if(b.lChild!=null) q.add(b.lChild);
-			if(b.rChild!=null) q.add(b.rChild);
-		}
-
-	}
-
-	//spiralOrder
-	public void spiralOrder(BTreeNode node){
-		Stack<BTreeNode> s1 = new Stack<BTreeNode>();
-		Stack<BTreeNode> s2 = new Stack<BTreeNode>();
-		s1.push(node);
-		while(!s1.isEmpty() || !s2.isEmpty()){
-			while(!s1.isEmpty()){
-				BTreeNode b = s1.pop();
-				if(!b.visited)System.out.println("LTR" + b.value);
-				b.visited = true;
-				if(b.rChild!= null)s2.push(b.rChild);
-				if(b.lChild!=null)s2.push(b.lChild);
-			}
-			while(!s2.isEmpty()){
-				BTreeNode b = s2.pop();
-				if(!b.visited)System.out.println("RTL" + b.value);
-				b.visited = true;
-				if(b.lChild!= null)s1.push(b.lChild);
-				if(b.rChild!=null)s1.push(b.rChild);
-			}	
-		}
-		
-		
-	}
-
-	//isPair
-	public boolean isPair(BTreeNode root,int target){
-		Stack<BTreeNode> s1 = new Stack<BTreeNode>();
-		Stack<BTreeNode> s2 = new Stack<BTreeNode>();
-		int val1 =0;
-		int val2 =0;
-		boolean b1 =false;
-		boolean b2= false;
-		BTreeNode curf = root;
-		BTreeNode curr = root;
-		while(true){
-			while(!b1){
-				if(curf!=null){
-					s1.push(curf);
-					curf = curf.lChild;
-				}
-				else{
-					if(s1.isEmpty()){
-						b1 = true;
-					}
-					else{
-						curf = s1.pop();
-						val1 = curf.value;
-						curf = curf.rChild;
-						b1 = true;
-					}
-				}
-			}
-			while(!b2){
-				if(curr!=null){
-					s2.push(curr);
-					curr = curr.rChild;
-				}
-				else{
-					if(s2.isEmpty()){
-						b2 = true;
-					}
-					else{
-						curr = s2.pop();
-						val2 = curr.value;
-						curr = curr.lChild;
-						b2 = true;
-					}
-				}
-			}
-			if((val1 != val2) && (val1 +val2 ==target)){
-				System.out.println("Pair Found...."+val1 + "Pair Found..." + val2);
-				return true;
-			}
-			else if ((val1+val2) > target) {
-					b2 = false;
-				}
-			else if((val1+val2) < target){
-					b1 = false;
-				}
-			
-			if(val1 >= val2)
-			{
-				System.out.println("Pair Not Found...."+val1 + "Pair Not Found..." + val2);
-				return false;	
-
-			}
-					
-
-		}
-		
-	}
-
-	//kDistance
-	public void kDistance(BTreeNode n1, BTreeNode n2){
-		BTreeNode b = findAncestor(this.root,n1,n2);
-		int dist = getDistance(n1) - 2 * getDistance(b) + getDistance(n2); 
-		System.out.println("Distance.."+ dist);
-
-	}
-
-	//getHeight
-	public int getHeight(BTreeNode n1){
-		if(n1 == null)return 0;
-
-		else return 1+Math.max(getHeight(n1.lChild),getHeight(n1.rChild));
-	}
-
-	//getDistance
-	public int getDistance(BTreeNode node){
-		int height = 1;
-		BTreeNode temp = this.root;
-		//if(temp == root)return 1;
-		while(temp!=node){
-			if(node.value < temp.value){
-				if(temp.lChild!=null){
-					temp = temp.lChild;
-					height++;
-				}
-			}
-			else{
-				if(temp.rChild!=null){
-					temp = temp.rChild;
-					height++;
-				}
-				
-			}
-		}
-		return height;
-	}
-
-	//isBalanced
-	public boolean isBalanced(BTreeNode node){
-		if(node == null) return true;
-		int diff =  getHeight(node.lChild) -getHeight(node.rChild);
-		if (diff < 0) {
-    		diff *= -1;
-		}
-		if(diff <= 1 && isBalanced(node.rChild) && isBalanced(node.lChild)) return true;
-		else return false;
-	}
-
-	//rightView
-	public void rightView(BTreeNode node){
-		int max_level = 0;
-		rightViewUtil(node,1,max_level);
-	}
-
-
-	public void rightViewUtil(BTreeNode node, int level,int max_level){
-		if(root == null)return;
-		//System.out.println("level"+level + "max"+max_level);
-		if(max_level < level){
-			System.out.println("level"+level + "data"+node.value);
-			max_level = level;
-		}
-		if(node.rChild!=null) rightViewUtil(node.rChild,level+1,max_level);
-		if(node.lChild!=null) rightViewUtil(node.lChild,level,max_level);
-	}
-
-	//sum 
-	public int sum(BTreeNode node ,int val){
-		if(node == null) return 0;
-		val = node.value + 10*val;
-		
-		if(node.lChild == null  && node.rChild ==null){
-			System.out.println("node "+ node.value + " Vlaue  " + val);
-			return val;
-		}
-		else return sum(node.lChild,val)+ sum(node.rChild,val);
-		//if(root.lChild ==null && root.rChild == null) return val;
-		
-	}
-
-	
-
-	public int rMember(BTreeNode root,int key){
-		if(root ==null)return -1;
-		Queue<BTreeNode> q = new LinkedList<BTreeNode>();
-		int out = -1;
-		boolean isFlag = true;
-		if(root.value == key) return key;
-		q.add(root);
-		//q.add(null);
-		while(!q.isEmpty()){
-			BTreeNode bt = q.remove();
-			BTreeNode bq = q.peek();
-			if(bt!=null){
-				if(bt.value == key){
-					//System.out.println("_______________________________________________________________________");
-					System.out.println("rightValue "+ bt.value);
-					BTreeNode next = q.element();
-					if(next == null) out =-1;
-					else {
-						out = next.value;
-						System.out.println("rightView "+ next.value);
-					}
-				}
-				else{
-					if(bt.lChild!=null)q.add(bt.lChild);
-					if(bt.rChild!=null)q.add(bt.rChild);
-					if(isFlag){
-						q.add(null);
-						isFlag = false;
-					}
-					if(bq ==null)q.add(null);  
-					System.out.println("Not Equal "+ bt.value);	
-					//System.out.println("_______________________________________________________________________");
-				}
-				
-			}
-
-		}
-		return out;
-	}
+  //function to directly call function of this class
+  public void show(BTreeNode node){
+    inVertical(node,0);
+    printVertical(ht);
+    //transformTree(node,0);
+    //inOrder(node);
+    System.out.println("............................................................................");
+    System.out.println(inOrderSuccessor(root,this.root.lChild.lChild).value);
+    System.out.println("............................................................................");
+    int a[] ={1,2,4,5,6,8,9};
+    System.out.println("............................................................................");
+    inOrder(arraytoTree(a,0,6));
+    //ArrayList<LinkedList<BTreeNode>> al = getList(root);
+    System.out.println("............................................................................");
+   // System.out.println("leng" + al.size());
+    Hashtable<Integer,LinkedList<BTreeNode>> ht = getList(this.root);
+    Set<Integer> keys = ht.keySet();
+    for(Integer s: keys){
+      LinkedList<BTreeNode>l = ht.get(s);
+      for(BTreeNode b:l)System.out.println("Level "+s+" Value "+ b.value);
+    }
+  }
+  //print tree in vertical order
+  public void inVertical(BTreeNode node,int hd){
+    if(node==null)return;
+    if(node.lChild!=null)inVertical(node.lChild,hd-1);
+    ArrayList<BTreeNode>al;
+    //al = ht.get(hd);
+    if(ht.get(hd) == null){
+      al = new ArrayList<BTreeNode>();
+      al.add(node);
+    }
+    else{
+      al = ht.get(hd);
+      al.add(node);
+    }
+    ht.put(hd,al);
+    if(node.rChild!=null)inVertical(node.rChild,hd+1);
+  }
+  
+  //print tree vertically
+  public void printVertical(Hashtable hash){
+    Enumeration names;
+    names = hash.keys();
+    int k;
+    while(names.hasMoreElements()) {
+      k = (Integer) names.nextElement();
+      ArrayList<BTreeNode> al = (ArrayList<BTreeNode>)hash.get(k);
+      for(BTreeNode b:al)System.out.print("key "+k+" value "+b.value+" ");
+      System.out.println("\n");
+    }
+  }
+  
+  //inOrderSuccessor
+  public BTreeNode inOrderSuccessor(BTreeNode node,BTreeNode tmp){
+    BTreeNode t = tmp;
+    BTreeNode succ = null;
+    BTreeNode anc = this.root;
+    if(node==null || tmp ==null)return null;
+    if(t.rChild!=null){
+      t=t.lChild;
+      while(t.lChild!=null)t=t.lChild;
+      return t;
+    }
+    else{
+      while(anc!=tmp){
+        if(tmp.value<anc.value){
+          succ = anc;
+          anc =anc.lChild;
+          System.out.println("ha ha "+succ.value);
+        }
+        else{
+          anc = anc.rChild;
+        }
+      }
+      return succ;
+    }
+    
+  }
+  
+  //given sorted array create Binary Tree of minimal height from iterative
+  public BTreeNode arraytoTree(int a[],int start,int end){
+    if(start > end)return null;
+    int inorder[] = Arrays.copyOfRange(a, start, end);
+    int mid = (start+end)/2;
+    BTreeNode b = new BTreeNode(a[(start+end)/2]);
+    b.lChild = arraytoTree(a,start,mid-1);
+    b.rChild = arraytoTree(a,mid+1,end);
+    System.out.println("value of node "+b.value);
+    return b;
+  }
+  
+  //generate Linkedlist for each level
+  public Hashtable<Integer,LinkedList<BTreeNode>> getList(BTreeNode node){
+    Queue<BTreeNode> q = new LinkedList<BTreeNode>();
+    BTreeNode tmp = new BTreeNode(-1);
+    Hashtable<Integer,LinkedList<BTreeNode>>al = new Hashtable<Integer,LinkedList<BTreeNode>>();
+    q.add(node);
+    q.add(tmp);
+    LinkedList<BTreeNode> l = new LinkedList<BTreeNode>();
+    int level=1;;
+    while(!q.isEmpty()){
+      BTreeNode b = q.remove();
+      
+      if(b!=tmp){
+         l.add(b);
+         //System.out.println(b.value);
+         if(b.lChild!=null)q.add(b.lChild);
+         if(b.rChild!=null)q.add(b.rChild);
+         if(q.peek() == tmp){
+            q.add(tmp); 
+         }
+      }
+      else{
+       // b = q.remove();
+        al.put(level,l);
+        l = new LinkedList<BTreeNode>();
+        level++;
+        //System.out.println("tmp "+ b.value);
+        //al.add(l);
+      }
+      
+    }
+    return al;
+  }
 
 }
