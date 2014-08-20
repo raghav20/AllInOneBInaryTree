@@ -2,7 +2,7 @@
 import java.util.*;
 class BTreeNode{
   BTreeNode lChild;
-  BTreeNode rChild;
+	BTreeNode rChild;
   boolean islVisited;
   boolean isrVisited;
 	int value;
@@ -47,6 +47,7 @@ public class BTree{
   BTree(){
     root  = null;
     ht = new Hashtable<Integer,ArrayList<BTreeNode>>();
+    
   }
 
   //inserting values into Binary Tree
@@ -387,6 +388,9 @@ public class BTree{
       LinkedList<BTreeNode>l = ht.get(s);
       for(BTreeNode b:l)System.out.println("Level "+s+" Value "+ b.value);
     }
+    System.out.println("............................................................................");
+    spiralOrder(this.root);
+    
   }
   //print tree in vertical order
   public void inVertical(BTreeNode node,int hd){
@@ -490,6 +494,29 @@ public class BTree{
       
     }
     return al;
+  }
+  
+  //print in spiralOrder
+  public void spiralOrder(BTreeNode node){
+    Stack<BTreeNode>s1 = new Stack<BTreeNode>();
+    Stack<BTreeNode>s2 = new Stack<BTreeNode>();
+    s1.push(node);
+		while(!s1.isEmpty() || !s2.isEmpty()){
+			while(!s1.isEmpty()){
+				BTreeNode b = s1.pop();
+				if(!b.islVisited)System.out.println("LTR" + b.value);
+				b.islVisited = true;
+				if(b.rChild!= null)s2.push(b.rChild);
+				if(b.lChild!=null)s2.push(b.lChild);
+			}
+			while(!s2.isEmpty()){
+				BTreeNode b = s2.pop();
+				if(!b.islVisited)System.out.println("RTL" + b.value);
+				b.islVisited = true;
+				if(b.lChild!= null)s1.push(b.lChild);
+				if(b.rChild!=null)s1.push(b.rChild);
+			}	
+		}
   }
 
 }
