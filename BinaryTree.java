@@ -2,7 +2,7 @@
 import java.util.*;
 class BTreeNode{
   BTreeNode lChild;
-	BTreeNode rChild;
+  BTreeNode rChild;
   boolean islVisited;
   boolean isrVisited;
 	int value;
